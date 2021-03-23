@@ -24,6 +24,7 @@ class SmartEmailing
 	const NODE_IMPORT = 'import';
 	const NODE_PURPOSES = 'purposes';
 	const NODE_PURPOSE_CONNECTIONS = 'purpose-connections';
+	const NODE_ORDERS = 'orders';
 
 	const METHOD_GET = 'GET';
 	const METHOD_POST = 'POST';
@@ -199,10 +200,13 @@ class SmartEmailing
 	 * @param array|NULL $purposes
 	 * @param array|NULL $settings
 	 */
-	public function importContact($email, array $contactLists = NULL, array $properties = NULL, array $customFields = NULL, array $purposes = NULL, array $settings = NULL)
+	public function importContact($email, $name = NULL, $surname = NULL, $language = 'cz_CZ', array $contactLists = NULL, array $properties = NULL, array $customFields = NULL, array $purposes = NULL, array $settings = NULL)
 	{
 		$contact = [
 			'emailaddress' => $email,
+			'name' => $name,
+			'surname' => $surname,
+			'language' => $language
 		];
 
 		if (is_array($contactLists)) {
@@ -217,7 +221,7 @@ class SmartEmailing
 
 		if (is_array($properties)) {
 			foreach ($properties as $name => $value) {
-				$contact[$name] = $value;
+				$contact['data'][$name] = $value;
 			}
 		}
 
@@ -240,6 +244,11 @@ class SmartEmailing
 		}
 
 		return $this->call(self::METHOD_POST, self::NODE_IMPORT, $data);
+	}
+
+	public function importOrders (array $data)
+	{
+		return $this->call(self::METHOD_POST, self::NODE_ORDERS, $data);
 	}
 
 	/**
@@ -276,6 +285,4 @@ class SmartEmailing
 
 		return Json::decode((string) $response->getBody(), Json::FORCE_ARRAY);
 	}
-
-
 }
